@@ -27,10 +27,10 @@ To complete the Flexx-Table implementation, we need to add client-side data load
 5. Handle loading states and potential errors during the data fetching process.
 6. Ensure the table updates reactively when the data is loaded.
 
-To create the aggregrated data, we need to create a new API route for the Flexx-Table data:
+To create the aggregated data, we need to create a new API route for the Flexx-Table data:
 
 7. Create a new API route for the top cards (that will forward fake-data).
-8. Propogate the data to the client-side component via the API call.
+8. Propagate the data to the client-side component via the API call.
 9. Present the data in the top cards.
 
 - Note: Action icons just need to be placeholders.
