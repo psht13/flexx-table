@@ -17,7 +17,7 @@ import { Checkbox, TablePagination } from '@mui/material'
 import styles from '@core/styles/table.module.css'
 
 // Type Imports
-import type { FlexxTableType } from '@/types/pages/flexxTableType'
+import type { FlexxTableCardsDataType, FlexxTableType } from '@/types/pages/flexxTableType'
 
 // Column Definitions
 const columnHelper = createColumnHelper<FlexxTableType>()
@@ -96,24 +96,40 @@ const columns = [
 
 const FlexxTableView = () => {
   // States
-  const [data, setData] = useState<[FlexxTableType] | []>(() => [])
-  const [perPage, setPerPage] = useState(() => 10)
-  const [page, setPage] = useState(() => 0)
-  const [total, setTotal] = useState(() => 0)
+  const [data, setData] = useState<[FlexxTableType] | []>([])
+  const [cardsData, setCardsData] = useState<FlexxTableCardsDataType | null>(null)
+
+  const [perPage, setPerPage] = useState(10)
+  const [page, setPage] = useState(0)
+  const [total, setTotal] = useState(0)
+
+  const [isLoading, setIsLoading] = useState(true)
 
   // Hooks
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`/api/pages/flexx-table?page=${page + 1}&limit=${perPage}`)
+        setIsLoading(() => true)
 
-        if (!res.ok) throw new Error('Failed to fetch data')
-        const { data: fetchedData, total: fetchedTotal } = await res.json()
+        const [res1, res2] = await Promise.all([
+          fetch(`/api/pages/flexx-table?page=${page + 1}&limit=${perPage}`),
+          fetch(`/api/pages/flexx-table/aggregate`)
+        ])
+
+        if (!res1.ok || !res2.ok) throw new Error('Failed to fetch data')
+
+        const [{ data: fetchedData, total: fetchedTotal }, fetchedCardsData] = await Promise.all([
+          res1.json(),
+          res2.json()
+        ])
 
         setData(() => fetchedData)
+        setCardsData(() => fetchedCardsData)
         setTotal(() => fetchedTotal)
       } catch (error) {
         console.error('Error fetching data')
+      } finally {
+        setIsLoading(() => false)
       }
     }
 
@@ -138,6 +154,9 @@ const FlexxTableView = () => {
     setPerPage(() => parseInt(event.target.value, 10))
     setPage(() => 0)
   }
+
+  // Conditions
+  if (isLoading) return <div className='text-center text-lg'>Loading...</div>
 
   return (
     <Card>
