@@ -179,7 +179,9 @@ const FlexxTableView = () => {
                   {i + 1 !== Object.keys(cardsData).length
                     ? new Intl.NumberFormat('en-US', {
                         style: 'currency',
-                        currency: 'USD'
+                        currency: 'USD',
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0
                       }).format(cardsData[el])
                     : new Intl.NumberFormat('en-US', {
                         currency: 'USD'
